@@ -5,7 +5,7 @@ from agents.agent import Analyser_node, Optimizer_node, Parser_node,Critic_node
 from pprint import pprint
 
 
-def critic_condtional_node(state:AgentState):
+def critic_conditional_node(state:AgentState):
     if state.approved or state.score >= state.score_threshold:
         return "parser"
     if state.iteration >= state.max_iterations:
@@ -28,7 +28,7 @@ wf.add_edge("optimizer","critic")
 
 wf.add_conditional_edges(
     "critic",
-    critic_condtional_node,
+    critic_conditional_node,
     {
         "parser":"parser",
         "optimizer":"optimizer"
