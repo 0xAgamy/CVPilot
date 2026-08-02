@@ -30,3 +30,13 @@ prompts:
     {{ old_resume }}
     </old_resume>
 
+    #### critique (if exist)
+      <critique>
+      {{ critique }}
+      </critique>
+
+
+    ### OUTPUT
+      `optimized_cv` : a full cv after Optimization
+      `optimization_summary`: Summary of what you already optimized
+

@@ -1,5 +1,5 @@
 from openai import OpenAI
-from models.models import AgentState, AnalyserResponseModel,OptimizerResponseModel, ParserResponseModel
+from models.models import AgentState, AnalyserResponseModel,OptimizerResponseModel, ParserResponseModel, CriticResponseModel
 from jinja2 import Template
 import instructor
 from helpers.config import get_settings
@@ -46,8 +46,7 @@ def Analyser_node(state: AgentState) -> dict:
     )
 
     return {
-        "optimization_suggestion":response.optimization_suggestion,
-        "score": response.score
+        "analysing_report":response.analysing_report
     }
 
 
@@ -55,8 +54,9 @@ def Optimizer_node(state: AgentState) -> dict:
     template=prompt_template_config("agents/prompts/optimizer_agent.yaml","optimizer_agent")
     prompt=template.render(
         jd= state.jd,
-        analysis_report=state.optimization_suggestion,
-        old_resume=state.cv
+        analysis_report=state.analysing_report,
+        old_resume=state.cv,
+        critique=state.critique
 
     )
 
@@ -72,7 +72,7 @@ def Optimizer_node(state: AgentState) -> dict:
 
     return {
         "optimized_cv": response.optimized_cv,
-        "score": float(response.score)
+        "optimization_summary":response.optimization_summary
     }
 
 
@@ -101,3 +101,48 @@ def Parser_node(state: AgentState)-> dict:
     }
 
 
+def Critic_node(state:AgentState)->dict:
+    template= prompt_template_config("agents/prompts/critic_agent.yaml","critic_agent")
+    prompt= template.render()
+    temp="""
+        JOB DESCRIPTION:
+        {{ jd }}
+
+        OPTIMIZED CV:
+        {{ optimized_cv }}
+
+        ORIGINAL CV (for fabrication check):
+        {{ cv }}
+
+        Previous critique (if any): {{ previous_critique }}
+        Iteration: {{ iteration }}/{{ max_iterations }}
+        Score threshold: {{ threshold }}""".strip()
+    query_template= Template(temp)
+    query= query_template.render(
+        jd=state.jd,
+        optimized_cv=state.optimized_cv,
+        cv= state.cv,
+        previous_critique=state.critique or "None (first pass)",
+        iteration= state.iteration,
+        max_iterations=state.max_iterations,
+        threshold=state.score_threshold
+
+    )
+
+
+    response, raw_response= client.chat.completions.create_with_completion(
+            model=MODEL_NAME,
+            messages=[
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": query}
+    
+            ],
+            response_model=CriticResponseModel,
+        )
+    return {
+        "score": response.score,
+        "critique": response.critique,
+        "critique_history": [response.critique],
+        "approved": response.approved,
+        "iteration": state.iteration + 1,
+    }

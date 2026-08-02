@@ -161,7 +161,7 @@ if optimize:
                     score = result.get("score", "N/A")
                     # Try to format as a number for a better metric display
                     try:
-                        score_val = float(score)
+                        score_val = float(score)*100
                         st.metric(
                             label="🎯 ATS Match Score", 
                             value=f"{score_val}/100",
@@ -172,10 +172,18 @@ if optimize:
                         st.metric(label="🎯 Optimization Score", value=score)
                         
                 with col_sugg:
-                    st.markdown("#### 💡 Optimization Suggestions")
+                    st.markdown("#### 💡 Optimization summary")
                     # Render as rich markdown instead of a code block for better readability
-                    suggestions = result.get("optimization_suggestions", "No suggestions provided.")
+                    suggestions = result.get("optimization_summary", "No suggestions provided.")
                     st.markdown(suggestions, unsafe_allow_html=True)
+
+
+
+                    history= result.get("critique_history")
+                    st.markdown("##### 💡 critique Suggestions")
+                    st.markdown(history, unsafe_allow_html=True)
+
+
             
             with tab_latex:
                 st.markdown("#### Optimized LaTeX Code")

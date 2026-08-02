@@ -14,14 +14,17 @@ async def agent_call(request:Request, jd:str=Form(), cv:UploadFile=File()):
     
     file_path=generate_unique_filepath(cv.filename)
     await save_file(file_path,cv)
-    print(f"file path: {file_path}")
+
     resume=doc_to_markdown(file_path)
     result= agents_wrapper(jd,resume)
-    
+    critique_history=result.get("critique_history",[])
+
+    critique_hist= " ".join(critique_history)
     return JSONResponse(
         content={
             "score": result.get("score"),
-            "optimization_suggestions": result.get("optimization_suggestion"),
+            "optimization_summary": result.get("optimization_summary"),
+            "critique_history":critique_hist,
             "optimized_cv": result["optimized_cv"],
             "download_url": f"{result.get("output_file_path")}",
         }
