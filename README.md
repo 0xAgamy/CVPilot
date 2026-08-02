@@ -1,4 +1,4 @@
-# 🚀 CVPilot
+# CVPilot
 
 **AI-Powered CV Optimization Multi-Agent System**
 
@@ -10,7 +10,9 @@ CVPilot is an intelligent, collaborative multi-agent system built with **LangGra
 - 🎯 **ATS Optimization**: Tailors your CV to match specific job descriptions with actionable, iterative feedback.
 - 🔄 **Smart Critique Loop**: The Critic agent evaluates the optimized CV and loops back to the Optimizer until a quality score threshold is met.
 - 📐 **Structured Outputs**: Leverages the `instructor` library to guarantee reliable, parseable Pydantic models instead of fragile raw text parsing.
-- ⚡ **Async FastAPI Backend**: High-performance API ready for integration with any frontend (Streamlit, React, etc.).
+- ⚡ **Async FastAPI Backend**: High-performance API ready for integration with any frontend
+- 💻 **Built-in Streamlit UI**: A clean, user-friendly interface to upload your CV, paste the job description, and download the optimized result.
+
 - 📄 **Document Processing**: Automatically converts `.docx` and other supported formats to Markdown for LLM processing using `markitdown`.
 
 ## 🏗️ Architecture
