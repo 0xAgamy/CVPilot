@@ -64,7 +64,7 @@ def Optimizer_node(state: AgentState) -> dict:
         model=MODEL_NAME,
         messages=[
             {"role": "system", "content": prompt},
-            {"role": "user", "content": "help me please"},
+            {"role": "user", "content": "Proceed with the optimization based on the provided context."},
 
         ],
         response_model=OptimizerResponseModel,
