@@ -14,7 +14,7 @@ class AgentState(BaseModel):
     iteration: int = 0
     max_iterations: int = 3
     critique: str = ""              
-    critique_history: Annotated[List[Any], add] = []
+    critique_history: Annotated[List[str], add] = []
     approved: bool = False 
 
 class AnalyserResponseModel(BaseModel):
