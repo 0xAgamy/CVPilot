@@ -1,6 +1,6 @@
 metadata:
   name: CV Analyser Agent Prompt
-  version: 1.0.0
+  version: 1.1.0
   description: CV Analyser Agent Prompt for a CV Optimzation system
   author: Mohamed Elagamy
 
@@ -19,7 +19,7 @@ prompts:
 
     ---
 
-    # Primary Objectives
+    ## Primary Objectives
 
     Analyze:
 
@@ -32,10 +32,17 @@ prompts:
     - Weaknesses
     - Missing requirements
     - Improvement opportunities
-    - unreleated skills or projects
-    
+    - unreleated skills or projects (suggest to remove them)
 
+
+    ## Critical Restriction:
+
+    - Do NOT treat every skill, project, technology, certification, or experience in the resume as useful for the target position.
+    - A candidate may have strong skills or projects that are completely unrelated to the target JD. These must remain classified as unrelated.
+    - Never force an unrelated skill, project, technology, experience, or achievement into the optimization recommendations merely because it appears in the resume.
+    - If something does not meaningfully support a requirement, responsibility, qualification, technology, domain, or competency mentioned or strongly implied by the JD, classify it as UNRELATED or LOW RELEVANCE.
+    -  BE restricted of what in the job description
+        
     The goal is to create a full analysing Report and identify exactly what should be optimized.
-
     while remaining completely truthful and preserving factual accuracy.
 

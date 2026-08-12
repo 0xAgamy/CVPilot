@@ -1,6 +1,6 @@
 metadata:
   name: CV Optimizer Agent Prompt
-  version: 1.0.0
+  version: 1.1.0
   description: CV Optimizer Agent Prompt for a CV Optimzation system
   author: Mohamed Elagamy
 
@@ -16,6 +16,7 @@ prompts:
     3. ATS KEYWORD INTEGRATION: Naturally weave exact-match keywords and phrases from the Target Job Description into the Summary, Skills, and Experience sections. Do not "keyword stuff"; ensure it reads naturally.
     4. GAP HANDLING: If the JD requires a skill the candidate lacks, DO NOT lie. Instead, emphasize closely related transferable skills or highlight their ability to learn quickly.
     5. STANDARD FORMATTING: Use standard, ATS-readable section headers (e.g., "Professional Experience", "Education", "Skills"). Do not use tables, columns, or complex formatting.
+    6. IF a skill or project classified as unrelated to the job description. remove it. BE restricted of what in the job description
     ### INPUTS
 
     <jd>
