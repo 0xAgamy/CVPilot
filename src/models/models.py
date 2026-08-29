@@ -7,8 +7,7 @@ class AgentState(BaseModel):
     optimization_summary:str= ""
     analysing_report:str=""
     optimized_cv:str= ""
-    output_file_path:str=""
-
+    
     score: float = 0.0
     score_threshold: float = 0.85
     iteration: int = 0

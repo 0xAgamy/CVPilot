@@ -20,14 +20,14 @@ def generate_unique_filepath(original_name:str):
     clean_filename=get_clean_filename(original_name)
 
     new_file_path= os.path.join(
-        "../files",
+        "files/",
         random_key + "_"+ clean_filename
     )
 
     while os.path.exists(new_file_path):
         random_key= generate_random_string()
         new_file_path= os.path.join(
-             "../files",
+             "files/",
             random_key + "_"+ clean_filename
         )
 
