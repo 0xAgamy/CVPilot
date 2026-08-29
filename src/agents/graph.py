@@ -5,13 +5,15 @@ from src.agents.optimizer.optimizer_node import OptimizerNode
 from src.agents.parser.parser_node import ParserNode
 from src.agents.critic.critic_node import CriticNode
 
+def critic_conditional_node(state:AgentState):
+    if state.approved or state.score >= state.score_threshold:
+        return "parser"
+    if state.iteration >= state.max_iterations:
+        return "parser"
+    return "optimizer"
+
 def graph_builder(llm_client, model_name):
-    def critic_conditional_node(state:AgentState):
-        if state.approved or state.score >= state.score_threshold:
-            return "parser"
-        if state.iteration >= state.max_iterations:
-            return "parser"
-        return "optimizer"
+
 
     Analyser_node= AnalyserNode(llm_client, model_name)
     Optimizer_node= OptimizerNode(llm_client,model_name)
