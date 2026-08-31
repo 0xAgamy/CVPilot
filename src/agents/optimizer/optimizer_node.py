@@ -8,10 +8,10 @@ class OptimizerNode:
     def __init__(self, llm_client:Any,model_name:str):
         self.llm_client= llm_client
         self.model_name= model_name
+        self.template=prompt_template_config("src/agents/prompts/optimizer_agent.yaml","optimizer_agent")
 
     def __call__(self, state:AgentState):
-        template=prompt_template_config("src/agents/prompts/optimizer_agent.yaml","optimizer_agent")
-        prompt=template.render(
+        prompt=self.template.render(
             jd= state.jd,
             analysis_report=state.analysing_report,
             old_resume=state.cv,

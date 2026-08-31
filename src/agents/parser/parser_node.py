@@ -8,9 +8,9 @@ class ParserNode:
     def __init__(self, llm_client:Any,model_name:str):
         self.llm_client= llm_client
         self.model_name= model_name
+        self.template= prompt_template_config("src/agents/prompts/parser_agent.yaml","parser_agent")
     def __call__(self, state:AgentState):
-        template= prompt_template_config("src/agents/prompts/parser_agent.yaml","parser_agent")
-        prompt=template.render(
+        prompt=self.template.render(
             optimized_cv= state.optimized_cv,
         )
     
