@@ -1,7 +1,7 @@
 from fastapi import  Request, APIRouter, UploadFile, Form, File , Depends
 from fastapi.responses import  JSONResponse
 import logging
-from src.helpers.helpers import doc_to_markdown, generate_unique_filepath, save_file
+from src.helpers.helpers import doc_to_markdown, generate_unique_filepath, save_file, delete_file
 from src.agents.graph import agents_wrapper
 from src.api.dependencies import AppDependencies, get_app_dependencies
 logger= logging.getLogger(__name__)
@@ -17,7 +17,7 @@ async def agent_call(request:Request, jd:str=Form(), cv:UploadFile=File(), deps:
     file_path=generate_unique_filepath(cv.filename)
     await save_file(file_path,cv)
     resume=doc_to_markdown(file_path)
- 
+    delete_file(file_path)
     result= agents_wrapper(graph,jd, resume)
     critique_history=result.get("critique_history",[])
 

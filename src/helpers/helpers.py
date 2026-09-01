@@ -54,3 +54,15 @@ async def save_file(file_path,file):
                 await f.write(chunk)
     except Exception as e:
         print(e)
+
+def delete_file(file_path: str) -> bool:
+    try:
+        if not os.path.exists(file_path):
+            return False
+
+        os.remove(file_path)
+        return True
+
+    except Exception as e:
+        print(f"Error deleting file: {e}")
+        return False
