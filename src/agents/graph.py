@@ -1,57 +1,50 @@
-from langgraph.graph import START, StateGraph, END
-from src.models.models import AgentState
+from typing import Any, Literal
+
+from langgraph.graph import END, START, StateGraph
+
 from src.agents.analyser.analyser_node import AnalyserNode
+from src.agents.critic.critic_node import CriticNode
 from src.agents.optimizer.optimizer_node import OptimizerNode
 from src.agents.parser.parser_node import ParserNode
-from src.agents.critic.critic_node import CriticNode
-
-def critic_conditional_node(state:AgentState):
-    if state.approved or state.score >= state.score_threshold:
-        return "parser"
-    if state.iteration >= state.max_iterations:
-        return "parser"
-    return "optimizer"
-
-def graph_builder(llm_client, model_name):
+from src.models.models import AgentInputs, AgentState
 
 
-    Analyser_node= AnalyserNode(llm_client, model_name)
-    Optimizer_node= OptimizerNode(llm_client,model_name)
-    Parser_node= ParserNode(llm_client,model_name)
-    Critic_node= CriticNode(llm_client,model_name)
-
-    wf= StateGraph(AgentState)
-
-    wf.add_node("analyser",Analyser_node )
-    wf.add_node("optimizer",Optimizer_node )
-    wf.add_node("parser",Parser_node )
-    wf.add_node("critic",Critic_node )
+def critic_conditional_node(
+    state: AgentState,
+) -> Literal["parser", "optimizer"]:
+    return "parser" if state.should_finalize else "optimizer"
 
 
-    wf.add_edge(START,"analyser")
-    wf.add_edge("analyser","optimizer")
+def graph_builder(llm_client: Any, model_name: str):
+    analyser_node = AnalyserNode(llm_client, model_name)
+    optimizer_node = OptimizerNode(llm_client, model_name)
+    parser_node = ParserNode(llm_client, model_name)
+    critic_node = CriticNode(llm_client, model_name)
 
-    wf.add_edge("optimizer","critic")
+    workflow = StateGraph(AgentState)
+    workflow.add_node("analyser", analyser_node)
+    workflow.add_node("optimizer", optimizer_node)
+    workflow.add_node("parser", parser_node)
+    workflow.add_node("critic", critic_node)
 
-    wf.add_conditional_edges(
+    workflow.add_edge(START, "analyser")
+    workflow.add_edge("analyser", "optimizer")
+    workflow.add_edge("optimizer", "critic")
+    workflow.add_conditional_edges(
         "critic",
         critic_conditional_node,
         {
-            "parser":"parser",
-            "optimizer":"optimizer"
-        }
+            "parser": "parser",
+            "optimizer": "optimizer",
+        },
     )
+    workflow.add_edge("parser", END)
 
-    wf.add_edge("parser",END)
-    return wf.compile()
-
-
-def agents_wrapper(graph,jd, cv) ->dict:
-    return graph.invoke(
-        {
-            "jd":jd,
-            "cv":cv
-        }
-        )
+    return workflow.compile()
 
 
+def agents_wrapper(graph: Any, jd: str, cv: str) -> dict[str, Any]:
+    initial_state = AgentState(
+        inputs=AgentInputs(job_description=jd, source_cv=cv),
+    )
+    return graph.invoke(initial_state)

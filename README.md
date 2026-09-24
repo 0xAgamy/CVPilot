@@ -26,6 +26,16 @@ The core intelligence is powered by a LangGraph state machine:
 4. **Parser**: Converts the final optimized Markdown into a clean, structured format (e.g., LaTeX).
 5. **END**
 
+### Agent state
+
+The LangGraph state is organized into four focused groups:
+- **Inputs**: the target job description and source CV
+- **Workflow**: score threshold and iteration limits
+- **Artifacts**: analysis, optimization, and final parsed CV outputs
+- **Review**: the latest critic decision plus the complete typed critique history
+
+This separation preserves every critic pass while preventing intermediate outputs from overwriting one another.
+
 ## 📦 Installation
 
 ### 1. Clone the Repository
