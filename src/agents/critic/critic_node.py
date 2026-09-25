@@ -32,6 +32,7 @@ class CriticNode:
             ORIGINAL CV (for fabrication check):
             {{ cv }}
 
+            Source format: {{ source_format }}
             Previous critique (if any): {{ previous_critique }}
             Iteration: {{ iteration }}/{{ max_iterations }}
             Score threshold: {{ threshold }}
@@ -40,6 +41,7 @@ class CriticNode:
             jd=state.inputs.job_description,
             optimized_cv=state.artifacts.optimized_cv or "",
             cv=state.inputs.source_cv,
+            source_format=state.inputs.source_format,
             previous_critique=previous_critique,
             iteration=next_iteration,
             max_iterations=state.workflow.max_iterations,

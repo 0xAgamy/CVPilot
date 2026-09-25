@@ -1,6 +1,6 @@
 metadata:
   name: CV Critic Agent Prompt
-  version: 1.1.0
+  version: 1.2.0
   description: CV Critic Agent Prompt for a CV Optimzation system
   author: Mohamed Elagamy
 
@@ -16,6 +16,7 @@ prompts:
       - Factual integrity: no fabricated claims; additions must be reasonably inferable from the ORIGINAL CV "This is the most important Point"
 
     When suggesting changes, preserve the original meaning and evidence. Do not invent metrics, responsibilities, tools, or achievements.
+    The source may be Markdown or LaTeX. For a LaTeX source, treat the preamble, commands, macros, and layout as the user's chosen template; evaluate and preserve them rather than recommending conversion to Markdown or a different template.
     If iteration is near max, be more lenient on minor issues but still flag major gaps
         
     

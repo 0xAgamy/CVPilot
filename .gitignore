@@ -3,3 +3,4 @@ __pycache__
 .env
 files
 output
+.ruff_cache

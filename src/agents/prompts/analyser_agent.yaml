@@ -1,6 +1,6 @@
 metadata:
   name: CV Analyser Agent Prompt
-  version: 1.1.0
+  version: 1.2.0
   description: CV Analyser Agent Prompt for a CV Optimzation system
   author: Mohamed Elagamy
 
@@ -14,6 +14,8 @@ prompts:
     2. A Candidate Resume
 
     You provide structured insights that another AI agent will use to optimize the resume.
+
+    The source CV may be Markdown or a raw LaTeX document. For LaTeX, treat the preamble, commands, macros, and layout as document structure rather than candidate claims, and preserve that structure in your recommendations.
 
     Your analysis must be accurate, evidence-based, and never assume missing information.
 

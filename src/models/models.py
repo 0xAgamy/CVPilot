@@ -1,9 +1,19 @@
 from __future__ import annotations
 
 from operator import add
-from typing import Annotated
+from typing import Annotated, Literal
 
-from pydantic import AliasChoices, BaseModel, ConfigDict, Field, model_validator
+from pydantic import (
+    AliasChoices,
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_validator,
+    model_validator,
+)
+
+
+SourceFormat = Literal["markdown", "latex"]
 
 
 class AgentInputs(BaseModel):
@@ -11,9 +21,15 @@ class AgentInputs(BaseModel):
 
     model_config = ConfigDict(
         extra="forbid",
-        str_strip_whitespace=True,
         validate_assignment=True,
     )
+
+    @field_validator("job_description", "source_cv")
+    @classmethod
+    def require_non_whitespace_text(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("Text must contain non-whitespace characters.")
+        return value
 
     job_description: str = Field(
         min_length=1,
@@ -22,8 +38,19 @@ class AgentInputs(BaseModel):
     )
     source_cv: str = Field(
         min_length=1,
-        description="The source CV converted to Markdown.",
+        description=(
+            "The source CV text. Markdown for non-LaTeX uploads; raw LaTeX "
+            "for .tex/.tax uploads."
+        ),
         validation_alias=AliasChoices("source_cv", "cv"),
+    )
+    source_format: SourceFormat = Field(
+        default="markdown",
+        description=(
+            "The format supplied to the agents. LaTeX source is kept as raw "
+            "LaTeX and its template is preserved in the final output."
+        ),
+        validation_alias=AliasChoices("source_format", "input_format", "cv_format"),
     )
 
 
@@ -50,7 +77,6 @@ class ResumeArtifacts(BaseModel):
 
     model_config = ConfigDict(
         extra="forbid",
-        str_strip_whitespace=True,
         validate_assignment=True,
     )
 
@@ -64,11 +90,11 @@ class ResumeArtifacts(BaseModel):
     )
     optimized_cv: str | None = Field(
         default=None,
-        description="The latest optimized CV in Markdown format.",
+        description="The latest optimized CV in its source/output format.",
     )
     parsed_cv: str | None = Field(
         default=None,
-        description="The final, formatted CV in LaTeX format.",
+        description="The final CV, formatted as LaTeX or preserved from LaTeX input.",
     )
 
 
@@ -131,7 +157,9 @@ class AgentState(BaseModel):
 
     @property
     def final_cv(self) -> str | None:
-        """Prefer parsed LaTeX, falling back to optimized Markdown."""
+        """Return the final artifact without falling back across formats."""
+        if self.inputs.source_format == "latex":
+            return self.artifacts.parsed_cv
         return self.artifacts.parsed_cv or self.artifacts.optimized_cv
 
 
@@ -155,7 +183,10 @@ class AnalyserResponseModel(LLMResponseModel):
 class OptimizerResponseModel(LLMResponseModel):
     optimized_cv: str = Field(
         min_length=1,
-        description="Markdown for the optimized CV.",
+        description=(
+            "The optimized CV in the source format: Markdown for DOCX input "
+            "or complete LaTeX for LaTeX input."
+        ),
     )
     optimization_summary: str = Field(
         min_length=1,

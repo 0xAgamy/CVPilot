@@ -119,6 +119,13 @@ class AgentStateTests(unittest.TestCase):
         state.artifacts.parsed_cv = r"\documentclass{article}\end{document}"
         self.assertEqual(state.final_cv, r"\documentclass{article}\end{document}")
 
+    def test_latex_final_cv_does_not_fallback_to_markdown(self):
+        state = self.make_state()
+        state.inputs.source_format = "latex"
+        state.artifacts = ResumeArtifacts(optimized_cv="# Markdown fallback")
+
+        self.assertIsNone(state.final_cv)
+
 
 if __name__ == "__main__":
     unittest.main()

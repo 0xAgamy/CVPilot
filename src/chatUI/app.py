@@ -1,5 +1,10 @@
+from pathlib import Path
+
 import requests
 import streamlit as st
+
+
+LATEX_EXTENSIONS = {".tex", ".tax"}
 
 # --------------------------------------------------
 # Page Config
@@ -44,12 +49,18 @@ st.markdown("""
 # --------------------------------------------------
 # API Function
 # --------------------------------------------------
+def get_cv_mime_type(filename: str) -> str:
+    if Path(filename.strip()).suffix.lower() in LATEX_EXTENSIONS:
+        return "application/x-tex"
+    return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
+
 def optimize_cv(cv_file, job_description):
     files = {
         "cv": (
             cv_file.name,
             cv_file,
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            get_cv_mime_type(cv_file.name),
         )
     }
 
@@ -83,8 +94,9 @@ def optimize_cv(cv_file, job_description):
 # --------------------------------------------------
 st.title("🚀 Multi-Agent CV Optimization")
 st.markdown(
-    "Upload your current CV, paste the target Job Description, "
-    "and let our AI agents generate an optimized, ATS-friendly LaTeX resume."
+    "Upload your current CV, paste the target Job Description, and let our AI "
+    "agents generate an optimized, ATS-friendly LaTeX resume. LaTeX inputs "
+    "are optimized in place so their original template is preserved."
 )
 
 st.divider()
@@ -95,9 +107,13 @@ col1, col2 = st.columns([1, 1])
 with col1:
     st.markdown("### 📤 1. Upload your CV")
     cv_file = st.file_uploader(
-        "Drop your .docx file here",
-        type=["docx"],
-        help="Ensure your CV is in .docx format for optimal parsing by the CV Parser agent."
+        "Drop your .docx or LaTeX (.tex/.tax) file here",
+        type=["docx", "tex", "tax"],
+        help=(
+            "DOCX files are converted for analysis. LaTeX files (.tex, with "
+            ".tax accepted as an alias) are passed through unchanged and keep "
+            "their original template."
+        ),
     )
     if cv_file is not None:
         st.success(f"✅ Successfully uploaded: **{cv_file.name}**")
@@ -125,7 +141,10 @@ optimize = st.button(
 # --------------------------------------------------
 if optimize:
     if cv_file is None:
-        st.error("⚠️ **Missing File:** Please upload a `.docx` CV before proceeding.")
+        st.error(
+            "⚠️ **Missing File:** Please upload a `.docx`, `.tex`, or `.tax` "
+            "CV before proceeding."
+        )
         st.stop()
 
     if not job_description.strip():
@@ -146,6 +165,12 @@ if optimize:
             )
             
             st.balloons() # Celebrate success!
+
+            if result.get("source_format") == "latex":
+                st.info(
+                    "✨ Your input was LaTeX. The optimized document keeps its "
+                    "original LaTeX format and template."
+                )
             
             # Use tabs for a clean, organized results view
             tab_analysis, tab_latex, tab_download = st.tabs([
@@ -215,5 +240,5 @@ if optimize:
                 "💡 **Troubleshooting:**\n"
                 "- Ensure the backend server is running on `http://localhost:8000`.\n"
                 "- Check that the `/agent_call` endpoint is accessible and functioning correctly.\n"
-                "- Verify your `.docx` file is not corrupted or password-protected."
+                "- Verify your `.docx`, `.tex`, or `.tax` file is not corrupted or password-protected."
             )

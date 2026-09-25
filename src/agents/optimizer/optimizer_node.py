@@ -20,7 +20,10 @@ class OptimizerNode:
             jd=state.inputs.job_description,
             analysis_report=state.artifacts.analysis_report or "Not available",
             old_resume=latest_cv,
+            original_cv=state.inputs.source_cv,
+            latest_cv=latest_cv,
             critique=latest_critique,
+            source_format=state.inputs.source_format,
         )
 
         response, _ = self.llm_client.chat.completions.create_with_completion(
@@ -29,7 +32,10 @@ class OptimizerNode:
                 {"role": "system", "content": prompt},
                 {
                     "role": "user",
-                    "content": "Proceed with the optimization based on the provided context.",
+                    "content": (
+                        "Proceed with the optimization based on the provided "
+                        "context. Return the CV in the requested source format."
+                    ),
                 },
             ],
             response_model=OptimizerResponseModel,

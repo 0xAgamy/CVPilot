@@ -22,12 +22,13 @@ class AnalyserNode:
             ### job description
             {{ job_description }}
 
-            ### markdown Resume
+            ### Source CV ({{ source_format }})
             {{ resume }}
             """
         ).render(
             job_description=state.inputs.job_description,
             resume=state.inputs.source_cv,
+            source_format=state.inputs.source_format,
         )
         response, _ = self.llm_client.chat.completions.create_with_completion(
             model=self.model_name,

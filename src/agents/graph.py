@@ -6,7 +6,7 @@ from src.agents.analyser.analyser_node import AnalyserNode
 from src.agents.critic.critic_node import CriticNode
 from src.agents.optimizer.optimizer_node import OptimizerNode
 from src.agents.parser.parser_node import ParserNode
-from src.models.models import AgentInputs, AgentState
+from src.models.models import AgentInputs, AgentState, SourceFormat
 
 
 def critic_conditional_node(
@@ -43,8 +43,17 @@ def graph_builder(llm_client: Any, model_name: str):
     return workflow.compile()
 
 
-def agents_wrapper(graph: Any, jd: str, cv: str) -> dict[str, Any]:
+def agents_wrapper(
+    graph: Any,
+    jd: str,
+    cv: str,
+    source_format: SourceFormat = "markdown",
+) -> dict[str, Any]:
     initial_state = AgentState(
-        inputs=AgentInputs(job_description=jd, source_cv=cv),
+        inputs=AgentInputs(
+            job_description=jd,
+            source_cv=cv,
+            source_format=source_format,
+        ),
     )
     return graph.invoke(initial_state)
